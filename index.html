@@ -892,7 +892,7 @@
       }
     }
 
-    function initGitHub() {
+    async function initGitHub() {
       // Clear local storage revisions on page load so we strictly rely on Cloud Sync
       localStorage.removeItem(CV_STORAGE_KEY);
       
@@ -902,10 +902,10 @@
       if (githubToken) {
         document.getElementById('github-modal').classList.add('hidden');
         setEditMode(true);
-        fetchCloudVersions();
+        await fetchCloudVersions();
       } else {
         setEditMode(false);
-        fetchCloudVersions(); // Fallback to local
+        await fetchCloudVersions(); // Fallback to local
       }
     }
 
@@ -916,7 +916,7 @@
         // Clear any old gist ID when switching tokens
         localStorage.removeItem(GITHUB_GIST_ID_KEY);
         gistId = null;
-        initGitHub();
+        initGitHub(); // Fire and forget when manually saving config
       }
     }
 
@@ -1043,10 +1043,15 @@
       if (isManual) updateStatus('Saving...', 'fa-spinner fa-spin');
 
       const timestamp = new Date().toISOString();
+      const nextVersionNum = (cachedVersions.length > 0 && cachedVersions[cachedVersions.length - 1].versionNum) 
+                              ? cachedVersions[cachedVersions.length - 1].versionNum + 1 
+                              : (cachedVersions.length + 1);
+
       cachedVersions.push({
         id: Date.now().toString(),
         timestamp: timestamp,
-        content: htmlContent
+        content: htmlContent,
+        versionNum: nextVersionNum
       });
 
       await saveVersionsToCloud(cachedVersions);
@@ -1076,13 +1081,18 @@
       const dropdown = document.getElementById('history-dropdown');
       dropdown.innerHTML = '<option value="">Restore History...</option>';
 
-      [...cachedVersions].reverse().forEach(v => {
+      // Create a reversed copy for the dropdown display
+      [...cachedVersions].reverse().forEach((v, idx) => {
         const date = new Date(v.timestamp);
-        const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateString = date.toLocaleDateString();
+        
+        // Fallback for older versions that don't have versionNum
+        const vNum = v.versionNum ? v.versionNum : (cachedVersions.length - idx);
+
         const option = document.createElement('option');
         option.value = v.id;
-        option.textContent = `${dateString} ${timeString}`;
+        option.textContent = `Version ${vNum} (${dateString} ${timeString})`;
         dropdown.appendChild(option);
       });
     }
@@ -1097,16 +1107,16 @@
     }
 
     // Initialize on load
-    document.addEventListener('DOMContentLoaded', () => {
-      // Attempt to initialize GitHub Sync
-      initGitHub();
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Attempt to initialize GitHub Sync (Wait for fetch to complete)
+      await initGitHub();
 
       // Start Auto-save every 60 seconds
       autoSaveInterval = setInterval(() => {
         saveVersion(false);
       }, 60000);
 
-      // Save initial version if history is empty
+      // Save initial version ONLY if history is truly empty after fetching
       if (cachedVersions.length === 0) {
         saveVersion(false);
       }
