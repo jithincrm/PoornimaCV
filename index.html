@@ -183,6 +183,21 @@
         transform-origin: top center;
       }
     }
+
+    /* Readonly Mode */
+    .readonly-mode [contenteditable="true"],
+    .readonly-mode [contenteditable="false"] {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      cursor: text;
+    }
+
+    .readonly-mode .add-btn,
+    .readonly-mode .remove-btn,
+    .readonly-mode #format-toolbar,
+    .readonly-mode .editor-only {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -228,10 +243,10 @@
     </div>
     <div class="flex items-center gap-3">
       <button onclick="saveVersion(true)"
-        class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full transition-colors flex items-center gap-2 shadow-sm">
+        class="editor-only bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full transition-colors flex items-center gap-2 shadow-sm">
         <i class="fa-solid fa-floppy-disk"></i> Save Version
       </button>
-      <div class="relative">
+      <div class="relative editor-only">
         <select id="history-dropdown" onchange="loadVersion(this.value)"
           class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 focus:outline-none focus:border-blue-500 cursor-pointer appearance-none pr-8 min-w-[150px]">
           <option value="">Restore History...</option>
@@ -239,7 +254,7 @@
         <i
           class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
       </div>
-      <div class="w-px h-5 bg-slate-700 mx-1"></div>
+      <div class="w-px h-5 bg-slate-700 mx-1 editor-only"></div>
       <button onclick="document.getElementById('github-modal').classList.remove('hidden')"
         class="text-slate-300 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-colors flex items-center gap-2"
         title="Setup Cloud Sync">
@@ -442,14 +457,16 @@
         <ul class="text-[12.5px] text-slate-700 font-medium space-y-2" id="cert-list">
           <li class="flex items-start gap-3 editable-item">
             <div class="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
-              <i class="fa-solid fa-check text-[9px]"></i></div>
+              <i class="fa-solid fa-check text-[9px]"></i>
+            </div>
             <span contenteditable="true" class="flex-1 leading-tight">ITIL v4 Foundation Certification</span>
             <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
             </div>
           </li>
           <li class="flex items-start gap-3 editable-item">
             <div class="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
-              <i class="fa-solid fa-check text-[9px]"></i></div>
+              <i class="fa-solid fa-check text-[9px]"></i>
+            </div>
             <span contenteditable="true" class="flex-1 leading-tight">Microsoft Certified: Modern Desktop
               Administrator</span>
             <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
@@ -862,14 +879,32 @@
     let gistId = null;
     let cachedVersions = []; // Local cache to avoid excessive reads
 
+    function setEditMode(isEditable) {
+      if (isEditable) {
+        document.body.classList.remove('readonly-mode');
+        document.querySelectorAll('[data-editable="true"]').forEach(el => el.setAttribute('contenteditable', 'true'));
+      } else {
+        document.body.classList.add('readonly-mode');
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+          el.setAttribute('data-editable', 'true');
+          el.setAttribute('contenteditable', 'false');
+        });
+      }
+    }
+
     function initGitHub() {
+      // Clear local storage revisions on page load so we strictly rely on Cloud Sync
+      localStorage.removeItem(CV_STORAGE_KEY);
+      
       githubToken = localStorage.getItem(GITHUB_TOKEN_KEY);
       gistId = localStorage.getItem(GITHUB_GIST_ID_KEY);
 
       if (githubToken) {
         document.getElementById('github-modal').classList.add('hidden');
+        setEditMode(true);
         fetchCloudVersions();
       } else {
+        setEditMode(false);
         fetchCloudVersions(); // Fallback to local
       }
     }
@@ -936,14 +971,26 @@
 
         // 2. Fetch the actual gist content
         const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-                    headers: { 'Authorization': `token ${githubToken}` },
-                    cache: 'no-store'
+          headers: { 'Authorization': `token ${githubToken}` },
+          cache: 'no-store'
         });
         const gist = await res.json();
         const content = gist.files[FILENAME].content;
         cachedVersions = JSON.parse(content);
         updateHistoryDropdown();
-        updateStatus('GitHub Synced', 'fa-cloud');
+        
+        // Auto-load latest version from GitHub
+        if (cachedVersions.length > 0) {
+          const latestVersion = cachedVersions[cachedVersions.length - 1];
+          document.getElementById('cv-container').innerHTML = latestVersion.content;
+          
+          // Re-apply editable attributes in case the saved HTML lacked them
+          if (githubToken) {
+            setEditMode(true);
+          }
+        }
+        
+        updateStatus('GitHub Synced & Loaded', 'fa-cloud');
       } catch (e) {
         console.error("Fetch failed", e);
         updateStatus('Sync Failed', 'fa-xmark');
