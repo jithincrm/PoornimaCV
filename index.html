@@ -936,7 +936,8 @@
 
         // 2. Fetch the actual gist content
         const res = await fetch(`https://api.github.com/gists/${gistId}`, {
-          headers: { 'Authorization': `token ${githubToken}`, 'Cache-Control': 'no-cache' }
+                    headers: { 'Authorization': `token ${githubToken}` },
+                    cache: 'no-store'
         });
         const gist = await res.json();
         const content = gist.files[FILENAME].content;
