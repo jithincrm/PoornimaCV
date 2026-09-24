@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poornima PM - Professional CV</title>
+
+  <!-- Tailwind CSS for rapid styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome for professional icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- html2pdf.js for high-fidelity PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* Google Font Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #e2e8f0;
+      /* Subtle background outside the A4 page */
+      color: #1e293b;
+      /* Slate-800 for elegant readability */
+    }
+
+    /* Editable element styling for intuitive UI */
+    [contenteditable="true"] {
+      outline: none;
+      border-radius: 3px;
+      transition: all 0.2s ease-in-out;
+      padding: 2px 4px;
+      margin: -2px -4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background-color: #f1f5f9;
+      box-shadow: 0 0 0 1px #94a3b8;
+      cursor: text;
+    }
+
+    [contenteditable="true"]:focus {
+      background-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Exact A4 dimensions for the document container */
+    .cv-page {
+      width: 100%;
+      max-width: 794px;
+      /* Exact 210mm at 96dpi */
+      min-height: 1123px;
+      /* Exact 297mm at 96dpi */
+      margin: 2rem auto;
+      background: white;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 768px) {
+      .cv-page {
+        flex-direction: row;
+      }
+    }
+
+    /* Strict PDF layout enforcement */
+    .pdf-export-mode {
+      width: 794px !important;
+      max-width: 794px !important;
+      margin: 0 !important;
+      box-shadow: none !important;
+      display: flex !important;
+      flex-direction: row !important;
+    }
+
+    .pdf-export-mode .sidebar {
+      width: 30% !important;
+      flex: 0 0 30% !important;
+    }
+
+    .pdf-export-mode .main-content {
+      width: 70% !important;
+      flex: 0 0 70% !important;
+    }
+
+    /* Fix html2canvas text-justify rendering gaps */
+    .pdf-export-mode .text-justify {
+      text-align: left !important;
+    }
+
+    /* Professional Accent Colors */
+    .text-navy {
+      color: #0f172a;
+    }
+
+    .text-charcoal {
+      color: #334155;
+    }
+
+    .bg-light-gray {
+      background-color: #f8fafc;
+    }
+
+    .accent-border {
+      border-color: #cbd5e1;
+    }
+
+    /* Dynamic Elements */
+    .editable-item {
+      position: relative;
+    }
+
+    .remove-btn {
+      position: absolute;
+      right: -10px;
+      top: -10px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
+
+    .editable-item:hover>.remove-btn {
+      opacity: 1;
+    }
+
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2563eb;
+      background: #eff6ff;
+      border: 1px dashed #2563eb;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-btn:hover {
+      background: #dbeafe;
+    }
+
+    /* Print media adjustments */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+
+      body {
+        background-color: white;
+      }
+
+      .floating-btn,
+      .no-print,
+      .add-btn,
+      .remove-btn {
+        display: none !important;
+      }
+
+      .cv-page {
+        box-shadow: none;
+        margin: 0;
+        min-height: auto;
+        transform: scale(0.96);
+        transform-origin: top center;
+      }
+    }
+  </style>
+</head>
+
+<body class="antialiased pt-16">
+
+  <!-- GitHub Cloud Config Modal -->
+  <div id="github-modal"
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+        <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-brands fa-github text-slate-800"></i>
+          GitHub Cloud Sync</h3>
+        <button onclick="document.getElementById('github-modal').classList.add('hidden')"
+          class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6">
+        <p class="text-sm text-slate-600 mb-4">Paste your <strong>GitHub Personal Access Token (PAT)</strong> below. It
+          must have the <code>gist</code> scope checked. We will automatically create and sync a secret Gist to save
+          your CV versions.</p>
+        <input type="password" id="github-token-input"
+          class="w-full border border-slate-300 rounded-lg p-3 text-sm font-mono focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 mb-4"
+          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+        <div class="flex justify-end gap-3">
+          <button onclick="document.getElementById('github-modal').classList.add('hidden')"
+            class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">Cancel</button>
+          <button onclick="saveGitHubConfig()"
+            class="px-4 py-2 bg-slate-800 hover:bg-black text-white text-sm font-medium rounded-lg transition-colors shadow-sm flex items-center gap-2"><i
+              class="fa-solid fa-link"></i> Connect GitHub</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Versioning & Save Toolbar -->
+  <div
+    class="fixed top-0 left-0 w-full bg-slate-900 text-white shadow-md z-[100] flex items-center justify-between px-6 py-3 no-print">
+    <div class="flex items-center gap-4">
+      <h1 class="font-bold text-sm tracking-widest uppercase text-slate-300 flex items-center gap-2"><i
+          class="fa-solid fa-pen-nib"></i> CV Editor</h1>
+      <div class="w-px h-5 bg-slate-700 mx-1"></div>
+      <span id="auto-save-status" class="text-xs text-slate-400 flex items-center gap-1.5"><i
+          class="fa-solid fa-cloud"></i> Not Connected</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="saveVersion(true)"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded-full transition-colors flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-floppy-disk"></i> Save Version
+      </button>
+      <div class="relative">
+        <select id="history-dropdown" onchange="loadVersion(this.value)"
+          class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded px-3 py-1.5 focus:outline-none focus:border-blue-500 cursor-pointer appearance-none pr-8 min-w-[150px]">
+          <option value="">Restore History...</option>
+        </select>
+        <i
+          class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
+      </div>
+      <div class="w-px h-5 bg-slate-700 mx-1"></div>
+      <button onclick="document.getElementById('github-modal').classList.remove('hidden')"
+        class="text-slate-300 hover:text-white text-xs font-semibold py-1.5 px-3 rounded transition-colors flex items-center gap-2"
+        title="Setup Cloud Sync">
+        <i class="fa-brands fa-github text-slate-100"></i> Cloud Config
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Text Format Toolbar -->
+  <div id="format-toolbar"
+    class="absolute bg-slate-800 text-white rounded-lg shadow-xl px-2 py-1 flex items-center gap-1 z-50 transition-opacity duration-200 opacity-0 pointer-events-none no-print">
+    <button onmousedown="event.preventDefault(); formatText('bold')"
+      class="p-1.5 hover:bg-slate-700 rounded transition-colors text-[14px] w-8 h-8 flex items-center justify-center"
+      title="Bold"><i class="fa-solid fa-bold"></i></button>
+    <button onmousedown="event.preventDefault(); formatText('italic')"
+      class="p-1.5 hover:bg-slate-700 rounded transition-colors text-[14px] w-8 h-8 flex items-center justify-center"
+      title="Italic"><i class="fa-solid fa-italic"></i></button>
+    <button onmousedown="event.preventDefault(); formatText('underline')"
+      class="p-1.5 hover:bg-slate-700 rounded transition-colors text-[14px] w-8 h-8 flex items-center justify-center"
+      title="Underline"><i class="fa-solid fa-underline"></i></button>
+    <div class="w-px h-5 bg-slate-600 mx-1"></div>
+    <div class="relative group">
+      <button class="p-1.5 hover:bg-slate-700 rounded transition-colors text-[14px] h-8 px-2 flex items-center gap-1.5"
+        title="Text Color"><i class="fa-solid fa-palette"></i> <i
+          class="fa-solid fa-chevron-down text-[10px]"></i></button>
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 hidden group-hover:flex pb-2 z-50 cursor-default">
+        <div
+          class="bg-white p-2 rounded shadow-lg border border-slate-200 flex flex-wrap justify-center w-[110px] gap-2">
+          <button onmousedown="event.preventDefault(); formatColor('#0f172a')"
+            class="w-5 h-5 rounded-full bg-[#0f172a] hover:scale-110 transition-transform shadow-sm"></button>
+          <button onmousedown="event.preventDefault(); formatColor('#334155')"
+            class="w-5 h-5 rounded-full bg-[#334155] hover:scale-110 transition-transform shadow-sm"></button>
+          <button onmousedown="event.preventDefault(); formatColor('#2563eb')"
+            class="w-5 h-5 rounded-full bg-[#2563eb] hover:scale-110 transition-transform shadow-sm"></button>
+          <button onmousedown="event.preventDefault(); formatColor('#dc2626')"
+            class="w-5 h-5 rounded-full bg-[#dc2626] hover:scale-110 transition-transform shadow-sm"></button>
+          <button onmousedown="event.preventDefault(); formatColor('#16a34a')"
+            class="w-5 h-5 rounded-full bg-[#16a34a] hover:scale-110 transition-transform shadow-sm"></button>
+          <button onmousedown="event.preventDefault(); formatColor('#d97706')"
+            class="w-5 h-5 rounded-full bg-[#d97706] hover:scale-110 transition-transform shadow-sm"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Buttons -->
+  <div class="fixed bottom-8 right-8 flex flex-col gap-3 z-50 no-print" id="action-buttons">
+    <button onclick="window.print()"
+      class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all transform hover:-translate-y-1 flex items-center gap-3 w-full justify-center">
+      <i class="fa-solid fa-print"></i>
+      Print Preview
+    </button>
+    <button onclick="downloadDocx()"
+      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all transform hover:-translate-y-1 flex items-center gap-3 w-full justify-center">
+      <i class="fa-solid fa-file-word"></i>
+      Download DOCX
+    </button>
+    <button onclick="downloadPDF()"
+      class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition-all transform hover:-translate-y-1 flex items-center gap-3 w-full justify-center">
+      <i class="fa-solid fa-file-pdf"></i>
+      Download PDF
+    </button>
+  </div>
+
+  <!-- Main CV A4 Container -->
+  <div id="cv-container" class="cv-page">
+
+    <!-- Left Sidebar (30%) -->
+    <aside class="sidebar w-full md:w-[30%] bg-slate-50 border-r border-slate-200 px-6 pb-4 pt-8 flex flex-col">
+
+      <!-- Header Section -->
+      <div class="mb-3 border-b-2 border-blue-200 pb-2">
+        <h1 class="text-[26px] font-black text-slate-900 tracking-tight leading-none mb-1.5 uppercase whitespace-nowrap"
+          contenteditable="true">POORNIMA PM</h1>
+        <h2 class="text-[12px] font-bold text-blue-800 tracking-[0.15em] uppercase" contenteditable="true">Desktop
+          Support Engineer (L2)</h2>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="mb-3">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-address-book text-blue-600"></i> <span contenteditable="true">Contact</span>
+        </h3>
+        <div class="text-[11.5px] space-y-1.5 text-slate-700 font-medium" id="contact-list">
+          <div class="flex items-center gap-3 editable-item">
+            <i class="fa-solid fa-phone text-slate-400 w-4 text-center text-[11px]"></i>
+            <span contenteditable="true" class="flex-1 whitespace-nowrap">{Enter Mob Number}</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 editable-item">
+            <i class="fa-solid fa-envelope text-slate-400 w-4 text-center text-[11px]"></i>
+            <span contenteditable="true" class="flex-1 whitespace-nowrap truncate">pmpoornima20@gmail.com</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 editable-item">
+            <i class="fa-solid fa-location-dot text-slate-400 w-4 text-center text-[11px]"></i>
+            <span contenteditable="true" class="flex-1 break-words leading-tight">{Address Here}</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 editable-item">
+            <i class="fa-solid fa-calendar text-slate-400 w-4 text-center text-[11px]"></i>
+            <span contenteditable="true" class="flex-1 break-all">12-10-2001</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 editable-item">
+            <i class="fa-solid fa-flag text-slate-400 w-4 text-center text-[11px]"></i>
+            <span contenteditable="true" class="flex-1 break-all">Indian</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+        </div>
+        <button class="add-btn no-print" onclick="addContact()"><i class="fa-solid fa-plus"></i> Add Contact</button>
+      </div>
+
+      <!-- Core Skills Section -->
+      <div class="mb-3">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-laptop-code text-blue-600"></i> <span contenteditable="true">Technical Skills</span>
+        </h3>
+        <ul class="text-[12.5px] space-y-2 text-slate-700" id="skills-list">
+          <li class="editable-item flex flex-col gap-0.5"><span
+              class="font-bold text-slate-900 text-[10.5px] tracking-wide uppercase" contenteditable="true">OS &
+              Administration</span> <span class="font-medium" contenteditable="true">Windows, Linux, Microsoft Azure,
+              Microsoft 365</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="editable-item flex flex-col gap-0.5"><span
+              class="font-bold text-slate-900 text-[10.5px] tracking-wide uppercase" contenteditable="true">Hardware &
+              Operations</span> <span class="font-medium" contenteditable="true">System Installation, Asset
+              Configuration, Troubleshooting</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="editable-item flex flex-col gap-0.5"><span
+              class="font-bold text-slate-900 text-[10.5px] tracking-wide uppercase" contenteditable="true">Support &
+              Processes</span> <span class="font-medium" contenteditable="true">ITIL framework, Incident Management, SLA
+              Management</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="editable-item flex flex-col gap-0.5"><span
+              class="font-bold text-slate-900 text-[10.5px] tracking-wide uppercase"
+              contenteditable="true">Programming</span> <span class="font-medium" contenteditable="true">JavaScript,
+              HTML, CSS, Python, C, C++</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+        </ul>
+        <button class="add-btn no-print" onclick="addSkill()"><i class="fa-solid fa-plus"></i> Add Skill</button>
+      </div>
+
+      <!-- Languages Section -->
+      <div class="mb-3">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-language text-blue-600"></i> <span contenteditable="true">Languages</span>
+        </h3>
+        <ul class="grid grid-cols-2 gap-y-2 gap-x-2 text-[12.5px] text-slate-700 font-medium" id="lang-list">
+          <li class="editable-item flex items-center gap-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div><span class="flex-1"
+              contenteditable="true">English</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="editable-item flex items-center gap-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div><span class="flex-1"
+              contenteditable="true">Malayalam</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="editable-item flex items-center gap-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div><span class="flex-1"
+              contenteditable="true">Tamil</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="editable-item flex items-center gap-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div><span class="flex-1"
+              contenteditable="true">Hindi</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+        </ul>
+        <button class="add-btn no-print" onclick="addLanguage()"><i class="fa-solid fa-plus"></i> Add Language</button>
+      </div>
+
+      <!-- Certifications Section -->
+      <div>
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-certificate text-blue-600"></i> <span contenteditable="true">Certifications</span>
+        </h3>
+        <ul class="text-[12.5px] text-slate-700 font-medium space-y-2" id="cert-list">
+          <li class="flex items-start gap-3 editable-item">
+            <div class="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
+              <i class="fa-solid fa-check text-[9px]"></i></div>
+            <span contenteditable="true" class="flex-1 leading-tight">ITIL v4 Foundation Certification</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+          <li class="flex items-start gap-3 editable-item">
+            <div class="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
+              <i class="fa-solid fa-check text-[9px]"></i></div>
+            <span contenteditable="true" class="flex-1 leading-tight">Microsoft Certified: Modern Desktop
+              Administrator</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+        </ul>
+        <button class="add-btn no-print" onclick="addCert()"><i class="fa-solid fa-plus"></i> Add Certification</button>
+      </div>
+
+    </aside>
+
+    <!-- Right Main Content (70%) -->
+    <main class="main-content w-full md:w-[70%] bg-white px-8 pb-6 pt-8 flex flex-col">
+
+      <!-- Professional Summary -->
+      <section class="mb-5">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-3 mb-5 flex items-center gap-3">
+          <i class="fa-solid fa-user-tie text-blue-600"></i> <span contenteditable="true">Professional Summary</span>
+        </h3>
+        <p class="text-[13px] leading-[1.6] text-slate-700 font-medium text-justify" contenteditable="true">
+          Results-driven <strong>Desktop Support Engineer (L2)</strong> with nearly 4 years of experience delivering
+          robust IT solutions in enterprise-scale environments. Proven expertise in minimizing downtime through rapid
+          incident resolution, advanced Windows OS troubleshooting, and seamless Microsoft 365 administration. Highly
+          proficient in securing corporate ecosystems via Active Directory and Azure AD, while driving operational
+          efficiency through targeted automation utilizing PowerShell and modern endpoint management platforms.
+        </p>
+      </section>
+
+      <!-- Work Experience -->
+      <section class="mb-5">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-briefcase text-blue-600"></i> <span contenteditable="true">Professional
+            Experience</span>
+        </h3>
+
+        <div id="experience-list">
+          <!-- Wipro Experience -->
+          <div class="mb-4 editable-item group">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h4 class="font-bold text-slate-900 text-[14px]" contenteditable="true">Technical Support Engineer</h4>
+                <p class="text-[13px] font-bold text-blue-700 mt-0.5" contenteditable="true">Wipro Technologies <span
+                    class="text-slate-400 font-medium mx-1">|</span> <span class="text-slate-500 font-medium">Banking
+                    Project, Kochi, Kerala</span></p>
+              </div>
+              <span
+                class="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-sm"
+                contenteditable="true">Dec 2022 – Present</span>
+            </div>
+            <ul class="list-none ml-0 mt-3 text-[12.5px] text-slate-700 font-medium space-y-2">
+              <li
+                class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                <span class="flex-1" contenteditable="true">Provide clear and concise technical support to clients on a
+                  critical enterprise <strong>Banking Project</strong>, ensuring seamless integration and minimal
+                  disruption to operations.</span>
+                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+                </div>
+              </li>
+              <li
+                class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                <span class="flex-1" contenteditable="true">Manage the installation, configuration, and proactive
+                  maintenance of computer systems and enterprise networks.</span>
+                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+                </div>
+              </li>
+              <li
+                class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                <span class="flex-1" contenteditable="true">Promptly address and resolve SLA-related issues utilizing
+                  the <strong>OTRS system</strong>, significantly reducing resolution times and improving overall
+                  productivity.</span>
+                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+                </div>
+              </li>
+              <li
+                class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                <span class="flex-1" contenteditable="true">Apply cross-platform proficiency in <strong>Windows, Linux,
+                    and Microsoft Azure</strong> to maintain backend environments and generate accurate quality
+                  assurance reports.</span>
+                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+                </div>
+              </li>
+              <li
+                class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                <span class="flex-1" contenteditable="true">Utilize foundational programming logic in <strong>Java,
+                    Python, C, and JavaScript</strong> to support technical diagnostics and custom application
+                  configurations.</span>
+                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+                </div>
+              </li>
+              <li
+                class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                <span class="flex-1" contenteditable="true">Foster teamwork and collaboration through strong
+                  interpersonal communication, driving operational efficiency and continuous customer
+                  satisfaction.</span>
+                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+                </div>
+              </li>
+            </ul>
+            <button
+              class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-2 mb-1 no-print hover:text-blue-800 transition-colors"
+              onclick="addExperienceBullet(this)"><i class="fa-solid fa-plus"></i> Add Responsibility</button>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+        </div>
+        <button class="add-btn no-print" onclick="addExperience()"><i class="fa-solid fa-plus"></i> Add
+          Experience</button>
+
+      </section>
+
+      <!-- Education Section -->
+      <section class="mb-5">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-graduation-cap text-blue-600"></i> <span contenteditable="true">Education</span>
+        </h3>
+        <div id="education-list" class="space-y-4">
+          <div class="text-[12.5px] text-slate-700 editable-item group">
+            <div class="flex justify-between items-start mb-1">
+              <p class="font-bold text-slate-900 text-[13.5px]" contenteditable="true">Bachelor of Science: Computer
+                Science</p>
+              <span
+                class="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-sm whitespace-nowrap"
+                contenteditable="true">07/2019 – 04/2025</span>
+            </div>
+            <p class="font-medium text-blue-700" contenteditable="true">Mahatma Gandhi College Iritty, Kannur <span
+                class="text-slate-400 font-medium mx-1">|</span> <span class="text-slate-600">Score: 74.11%</span></p>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+          <div class="text-[12.5px] text-slate-700 editable-item group">
+            <div class="flex justify-between items-start mb-1">
+              <p class="font-bold text-slate-900 text-[13.5px]" contenteditable="true">Certificate of Higher Education:
+                Computer Science</p>
+              <span
+                class="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-sm whitespace-nowrap"
+                contenteditable="true">06/2017 – 03/2019</span>
+            </div>
+            <p class="font-medium text-blue-700" contenteditable="true">Sivapuram Higher Secondary School, Kannur <span
+                class="text-slate-400 font-medium mx-1">|</span> <span class="text-slate-600">Score: 80%</span></p>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+          <div class="text-[12.5px] text-slate-700 editable-item group">
+            <div class="flex justify-between items-start mb-1">
+              <p class="font-bold text-slate-900 text-[13.5px]" contenteditable="true">SSLC</p>
+              <span
+                class="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-sm whitespace-nowrap"
+                contenteditable="true">06/2016 – 03/2017</span>
+            </div>
+            <p class="font-medium text-blue-700" contenteditable="true">Rajeev Gandhi Memorial HSS, Mokeri <span
+                class="text-slate-400 font-medium mx-1">|</span> <span class="text-slate-600">Score: 82%</span></p>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+        </div>
+        <button class="add-btn no-print" onclick="addEducation()"><i class="fa-solid fa-plus"></i> Add
+          Education</button>
+      </section>
+
+      <!-- Awards Section -->
+      <section class="mb-5">
+        <h3
+          class="text-[13px] font-black text-slate-900 tracking-[0.15em] uppercase border-b-2 border-blue-200 pb-2 mb-3 flex items-center gap-3">
+          <i class="fa-solid fa-award text-blue-600"></i> <span contenteditable="true">Awards</span>
+        </h3>
+        <ul class="text-[12.5px] text-slate-700 font-medium space-y-3" id="awards-list">
+          <li class="flex items-center gap-3 editable-item">
+            <div class="w-4 h-4 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600"><i
+                class="fa-solid fa-star text-[9px]"></i></div>
+            <span contenteditable="true" class="flex-1"><strong class="text-slate-900">Best Employee</strong> —
+              Wipro</span>
+            <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i>
+            </div>
+          </li>
+        </ul>
+        <button class="add-btn no-print" onclick="addAward()"><i class="fa-solid fa-plus"></i> Add Award</button>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    function addContact() {
+      const html = `
+                    <div class="flex items-center gap-3 editable-item">
+                        <i class="fa-solid fa-circle-info text-slate-400 w-4 text-center text-[11px]"></i>
+                        <span contenteditable="true" class="flex-1 break-all">New Contact Detail</span>
+                        <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                    </div>`;
+      document.getElementById('contact-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addSkill() {
+      const html = `
+                    <li class="editable-item flex flex-col gap-0.5"><span class="font-bold text-slate-900 text-[10.5px] tracking-wide uppercase" contenteditable="true">Category</span> <span class="font-medium" contenteditable="true">New Skill</span><div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div></li>`;
+      document.getElementById('skills-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addEducation() {
+      const html = `
+                    <div class="text-[12.5px] text-slate-700 editable-item group">
+                        <div class="flex justify-between items-start mb-1">
+                            <p class="font-bold text-slate-900 text-[13.5px]" contenteditable="true">Degree / Major</p>
+                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-sm whitespace-nowrap" contenteditable="true">MM/YYYY – MM/YYYY</span>
+                        </div>
+                        <p class="font-medium text-blue-700" contenteditable="true">University / College <span class="text-slate-400 font-medium mx-1">|</span> <span class="text-slate-600">Score: XX%</span></p>
+                        <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                    </div>`;
+      document.getElementById('education-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addExperience() {
+      const html = `
+                    <div class="mb-5 editable-item group">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-[14px]" contenteditable="true">Job Title</h4>
+                                <p class="text-[13px] font-bold text-blue-700 mt-0.5" contenteditable="true">Company Name</p>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-sm" contenteditable="true">MMM YYYY – Present</span>
+                        </div>
+                        <ul class="list-none ml-0 mt-3 text-[12.5px] text-slate-700 font-medium space-y-2">
+                            <li class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                                <span class="flex-1" contenteditable="true">Responsibility or achievement description.</span>
+                                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                            </li>
+                        </ul>
+                        <button class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-2 mb-1 no-print hover:text-blue-800 transition-colors" onclick="addExperienceBullet(this)"><i class="fa-solid fa-plus"></i> Add Responsibility</button>
+                        <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                    </div>`;
+      document.getElementById('experience-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addExperienceBullet(btn) {
+      const ul = btn.previousElementSibling;
+      if (ul && ul.tagName === 'UL') {
+        const li = `
+                            <li class="relative pl-4 before:content-['▪'] before:absolute before:left-0 before:text-blue-500 before:-top-0.5 before:text-[14px] editable-item group flex items-start gap-2">
+                                <span class="flex-1" contenteditable="true">New responsibility or achievement description.</span>
+                                <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                            </li>`;
+        ul.insertAdjacentHTML('beforeend', li);
+      }
+    }
+
+    function addLanguage() {
+      const html = `
+                    <li class="editable-item flex items-center gap-3"><div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div><span class="flex-1" contenteditable="true">New Language</span><div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div></li>`;
+      document.getElementById('lang-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addAward() {
+      const html = `
+                    <li class="flex items-center gap-3 editable-item">
+                        <div class="w-4 h-4 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600"><i class="fa-solid fa-star text-[9px]"></i></div>
+                        <span contenteditable="true" class="flex-1"><strong class="text-slate-900">Award Name</strong> — Issuer</span>
+                        <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                    </li>`;
+      document.getElementById('awards-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addCert() {
+      const html = `
+                    <li class="flex items-start gap-3 editable-item">
+                        <div class="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-0.5"><i class="fa-solid fa-check text-[9px]"></i></div>
+                        <span contenteditable="true" class="flex-1 leading-tight">New Certification</span>
+                        <div class="remove-btn no-print" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></div>
+                    </li>`;
+      document.getElementById('cert-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function downloadDocx() {
+      const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+        "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+        "xmlns='http://www.w3.org/TR/REC-html40'>" +
+        "<head><meta charset='utf-8'><title>Export HTML to Word Document</title>" +
+        "<style>body { font-family: 'Inter', sans-serif, Arial; font-size: 11pt; color: #334155; } h1, h2, h3, h4 { color: #0f172a; margin-top:0; margin-bottom: 5px; } .font-bold { font-weight: bold; } .font-black { font-weight: 900; } .font-semibold { font-weight: 600; } .uppercase { text-transform: uppercase; } .flex { display: flex; } .justify-between { justify-content: space-between; } .text-blue-700 { color: #1d4ed8; } .text-blue-800 { color: #1e40af; } .text-slate-900 { color: #0f172a; } .text-slate-700 { color: #334155; } .text-slate-500 { color: #64748b; } .bg-slate-50 { background-color: #f8fafc; } .mb-2 { margin-bottom: 0.5rem; } .mb-4 { margin-bottom: 1rem; } .mb-6 { margin-bottom: 1.5rem; } .mb-8 { margin-bottom: 2rem; } .mb-10 { margin-bottom: 2.5rem; } .pb-2 { padding-bottom: 0.5rem; } .border-b { border-bottom: 1px solid #cbd5e1; } .border-b-2 { border-bottom: 2px solid #1e293b; }</style>" +
+        "</head><body>";
+      const footer = "</body></html>";
+
+      const element = document.getElementById('cv-container');
+      const clone = element.cloneNode(true);
+      const noPrintElems = clone.querySelectorAll('.no-print, .remove-btn, .add-btn');
+      noPrintElems.forEach(el => el.remove());
+
+      const html = header + clone.outerHTML + footer;
+
+      const blob = new Blob(['\\ufeff', html], {
+        type: 'application/msword'
+      });
+
+      const url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+      const downloadLink = document.createElement("a");
+      document.body.appendChild(downloadLink);
+
+      if (navigator.msSaveOrOpenBlob) {
+        navigator.msSaveOrOpenBlob(blob, 'Poornima_PM_CV.doc');
+      } else {
+        downloadLink.href = url;
+        downloadLink.download = 'Poornima_PM_CV.doc';
+        downloadLink.click();
+      }
+
+      document.body.removeChild(downloadLink);
+    }
+
+    function downloadPDF() {
+      // Remove focus to hide any active cursors or outlines
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+
+      const cvContainer = document.getElementById('cv-container');
+
+      // Apply strict class to lock dimensions and layout for PDF engine
+      cvContainer.classList.add('pdf-export-mode');
+
+      // Set configuration for html2pdf
+      // Use exact pixel dimensions (794px for A4 width) to prevent fractional scaling errors
+      const opt = {
+        margin: 0,
+        filename: 'Poornima_PM_Desktop_Support_CV.pdf',
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: {
+          scale: 2, // 2 is optimal balance for clarity and layout integrity
+          useCORS: true,
+          windowWidth: 794
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        }
+      };
+
+      // Hide no-print elements
+      const noPrintElements = cvContainer.querySelectorAll('.no-print, .remove-btn, .add-btn');
+      noPrintElements.forEach(el => el.style.display = 'none');
+
+      // Generate PDF
+      html2pdf().set(opt).from(cvContainer).save().then(() => {
+        // Restore UI state after download completes
+        cvContainer.classList.remove('pdf-export-mode');
+        noPrintElements.forEach(el => el.style.display = '');
+      }).catch(err => {
+        console.error('Error generating PDF: ', err);
+        // Ensure UI is restored even if it fails
+        cvContainer.classList.remove('pdf-export-mode');
+        noPrintElements.forEach(el => el.style.display = '');
+      });
+    }
+
+    // Rich Text Formatting Logic
+    const formatToolbar = document.getElementById('format-toolbar');
+
+    document.addEventListener('selectionchange', () => {
+      // Use setTimeout to ensure selection is fully updated
+      setTimeout(() => {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0 && !selection.isCollapsed) {
+          let node = selection.anchorNode;
+          let isEditable = false;
+          while (node && node !== document.body) {
+            if (node.getAttribute && node.getAttribute('contenteditable') === 'true') {
+              isEditable = true;
+              break;
+            }
+            node = node.parentNode;
+          }
+
+          if (isEditable) {
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+
+            // Center above selection
+            formatToolbar.style.top = `${rect.top + window.scrollY - formatToolbar.offsetHeight - 8}px`;
+            formatToolbar.style.left = `${rect.left + window.scrollX + (rect.width / 2) - (formatToolbar.offsetWidth / 2)}px`;
+
+            formatToolbar.classList.remove('opacity-0', 'pointer-events-none');
+            formatToolbar.classList.add('opacity-100', 'pointer-events-auto');
+            return;
+          }
+        }
+
+        // Hide toolbar
+        formatToolbar.classList.remove('opacity-100', 'pointer-events-auto');
+        formatToolbar.classList.add('opacity-0', 'pointer-events-none');
+      }, 10);
+    });
+
+    function formatText(command) {
+      document.execCommand(command, false, null);
+    }
+
+    function formatColor(color) {
+      document.execCommand('foreColor', false, color);
+    }
+
+    // --- Cloud Sync & Versioning Logic ---
+    const CV_STORAGE_KEY = 'cv_versions_v1';
+    const GITHUB_TOKEN_KEY = 'github_cv_token';
+    const GITHUB_GIST_ID_KEY = 'github_cv_gist_id';
+    const FILENAME = 'cv_editor_sync.json';
+
+    let autoSaveInterval = null;
+    let githubToken = null;
+    let gistId = null;
+    let cachedVersions = []; // Local cache to avoid excessive reads
+
+    function initGitHub() {
+      githubToken = localStorage.getItem(GITHUB_TOKEN_KEY);
+      gistId = localStorage.getItem(GITHUB_GIST_ID_KEY);
+
+      if (githubToken) {
+        document.getElementById('github-modal').classList.add('hidden');
+        fetchCloudVersions();
+      } else {
+        fetchCloudVersions(); // Fallback to local
+      }
+    }
+
+    function saveGitHubConfig() {
+      const token = document.getElementById('github-token-input').value.trim();
+      if (token) {
+        localStorage.setItem(GITHUB_TOKEN_KEY, token);
+        // Clear any old gist ID when switching tokens
+        localStorage.removeItem(GITHUB_GIST_ID_KEY);
+        gistId = null;
+        initGitHub();
+      }
+    }
+
+    async function fetchCloudVersions() {
+      if (!githubToken) {
+        // Fallback to local storage if Cloud is not configured
+        const data = localStorage.getItem(CV_STORAGE_KEY);
+        cachedVersions = data ? JSON.parse(data) : [];
+        updateHistoryDropdown();
+        return;
+      }
+      try {
+        updateStatus('Syncing...', 'fa-rotate');
+
+        // 1. If we don't have a Gist ID, find or create one
+        if (!gistId) {
+          const res = await fetch('https://api.github.com/gists', {
+            headers: { 'Authorization': `token ${githubToken}` }
+          });
+          if (!res.ok) throw new Error('Invalid token or network error');
+          const gists = await res.json();
+
+          const existingGist = gists.find(g => g.files[FILENAME]);
+          if (existingGist) {
+            gistId = existingGist.id;
+            localStorage.setItem(GITHUB_GIST_ID_KEY, gistId);
+          } else {
+            // Create new Gist
+            const createRes = await fetch('https://api.github.com/gists', {
+              method: 'POST',
+              headers: {
+                'Authorization': `token ${githubToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                description: 'CV Editor Auto-Sync Data',
+                public: false,
+                files: {
+                  [FILENAME]: { content: JSON.stringify([]) }
+                }
+              })
+            });
+            const newGist = await createRes.json();
+            gistId = newGist.id;
+            localStorage.setItem(GITHUB_GIST_ID_KEY, gistId);
+            cachedVersions = [];
+            updateHistoryDropdown();
+            updateStatus('GitHub Synced', 'fa-cloud');
+            return;
+          }
+        }
+
+        // 2. Fetch the actual gist content
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: { 'Authorization': `token ${githubToken}`, 'Cache-Control': 'no-cache' }
+        });
+        const gist = await res.json();
+        const content = gist.files[FILENAME].content;
+        cachedVersions = JSON.parse(content);
+        updateHistoryDropdown();
+        updateStatus('GitHub Synced', 'fa-cloud');
+      } catch (e) {
+        console.error("Fetch failed", e);
+        updateStatus('Sync Failed', 'fa-xmark');
+      }
+    }
+
+    async function saveVersionsToCloud(versions) {
+      // Keep only the last 15 versions to save space
+      if (versions.length > 15) {
+        versions = versions.slice(versions.length - 15);
+      }
+      cachedVersions = versions;
+      updateHistoryDropdown();
+
+      if (!githubToken || !gistId) {
+        // Fallback to local storage
+        localStorage.setItem(CV_STORAGE_KEY, JSON.stringify(versions));
+        return;
+      }
+
+      try {
+        await fetch(`https://api.github.com/gists/${gistId}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `token ${githubToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            files: {
+              [FILENAME]: { content: JSON.stringify(versions) }
+            }
+          })
+        });
+      } catch (e) {
+        console.error("Save failed", e);
+        updateStatus('Save Failed', 'fa-xmark');
+      }
+    }
+
+    async function saveVersion(isManual = false) {
+      const container = document.getElementById('cv-container');
+      const htmlContent = container.innerHTML;
+
+      // Don't save if it's exactly the same as the last version
+      if (cachedVersions.length > 0 && cachedVersions[cachedVersions.length - 1].content === htmlContent) {
+        if (isManual) updateStatus('No changes', 'fa-check');
+        return;
+      }
+
+      if (isManual) updateStatus('Saving...', 'fa-spinner fa-spin');
+
+      const timestamp = new Date().toISOString();
+      cachedVersions.push({
+        id: Date.now().toString(),
+        timestamp: timestamp,
+        content: htmlContent
+      });
+
+      await saveVersionsToCloud(cachedVersions);
+
+      if (isManual) {
+        updateStatus(githubToken ? 'Saved to GitHub!' : 'Saved Locally!', 'fa-cloud-arrow-up');
+      } else {
+        updateStatus(githubToken ? 'Auto-saved to GitHub' : 'Auto-saved Locally', 'fa-cloud-arrow-up');
+      }
+    }
+
+    function loadVersion(id) {
+      if (!id) return;
+      const version = cachedVersions.find(v => v.id === id);
+      if (version) {
+        if (confirm('Are you sure you want to restore this version? Any unsaved changes will be lost.')) {
+          document.getElementById('cv-container').innerHTML = version.content;
+          updateStatus('Restored version', 'fa-clock-rotate-left');
+          document.getElementById('history-dropdown').value = "";
+        }
+      } else {
+        document.getElementById('history-dropdown').value = "";
+      }
+    }
+
+    function updateHistoryDropdown() {
+      const dropdown = document.getElementById('history-dropdown');
+      dropdown.innerHTML = '<option value="">Restore History...</option>';
+
+      [...cachedVersions].reverse().forEach(v => {
+        const date = new Date(v.timestamp);
+        const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const dateString = date.toLocaleDateString();
+        const option = document.createElement('option');
+        option.value = v.id;
+        option.textContent = `${dateString} ${timeString}`;
+        dropdown.appendChild(option);
+      });
+    }
+
+    function updateStatus(text, iconClass) {
+      const statusEl = document.getElementById('auto-save-status');
+      statusEl.innerHTML = `<i class="fa-solid ${iconClass}"></i> ${text}`;
+      statusEl.classList.add('text-blue-400');
+      setTimeout(() => {
+        statusEl.classList.remove('text-blue-400');
+      }, 2000);
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Attempt to initialize GitHub Sync
+      initGitHub();
+
+      // Start Auto-save every 60 seconds
+      autoSaveInterval = setInterval(() => {
+        saveVersion(false);
+      }, 60000);
+
+      // Save initial version if history is empty
+      if (cachedVersions.length === 0) {
+        saveVersion(false);
+      }
+    });
+  </script>
+</body>
+
+</html>
